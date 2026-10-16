@@ -54,6 +54,21 @@ async def run_mac(dut, acts, bank):
     return dut.acc_o.value.to_signed()
 
 
+# Test random dot products
+@cocotb.test()
+async def test_random_dot_products_x2(dut):
+    cocotb.start_soon(Clock(dut.clk_i, 10, unit="ns").start())
+    await reset(dut)
+    
+    rng = np.random.default_rng(1234)
+    for i in range(20):
+        w = rng.integers(-128, 128, m.N_ROWS, dtype=np.int64)
+        a = rng.integers(-128, 128, m.N_ROWS, dtype=np.int64)
+        await write_weights(dut, w, bank=0)
+        got = await run_mac(dut, a, bank=0)
+        exp, _ = m.partition_mac(w, a)
+        assert exp == got, f"trial {i}: RTL{got} != model {exp}"
+
 @cocotb.test()
 async def test_random_dot_products(dut):
     cocotb.start_soon(Clock(dut.clk_i, 10, unit="ns").start())

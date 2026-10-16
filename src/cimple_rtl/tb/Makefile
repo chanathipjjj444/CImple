@@ -11,6 +11,8 @@ TOPLEVEL_LANG ?= verilog
 
 VERILOG_SOURCES := \
   $(TOPDIR)/rtl/cimple_pkg.sv \
+  $(TOPDIR)/rtl/bitcell.sv \
+  $(TOPDIR)/rtl/oai221.sv \
   $(TOPDIR)/rtl/cim_macro.sv \
   $(TOPDIR)/rtl/cim_partition.sv \
   $(TOPDIR)/rtl/cim_core.sv \

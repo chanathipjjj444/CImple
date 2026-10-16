@@ -62,6 +62,7 @@ def partition_mac(weights, acts):
     acts    : (N_ROWS,) INT8      -- broadcast activation vector
     returns : the 23b accumulator value, and the per-cycle trace.
     """
+    
     weights = s8(weights)
     acts = s8(acts)
     msb, lsb = nibble_split(weights)
@@ -178,3 +179,100 @@ def reference_softmax_row(scores, values, score_scale, z_quant_max=127):
     p = np.exp(z)
     p /= p.sum()
     return float(np.dot(p, s8(values).astype(np.float64)))
+
+
+# ---------------------------------------------------------------------------
+# Model-level helpers: composing the blocks into an attention head
+# ---------------------------------------------------------------------------
+def ratio_to_scale_shift(r, scale_w=16, max_shift=31):
+    """Best (scale, shift) with scale/2**shift ~= r and scale < 2**scale_w."""
+    for shift in range(max_shift, -1, -1):
+        sc = int(round(r * (1 << shift)))
+        if 0 < sc < (1 << scale_w):
+            return sc, shift
+    raise ValueError(f"ratio {r} cannot be encoded in {scale_w}b scale")
+
+
+def to_int8(x, scale):
+    """float -> INT8 with a per-tensor scale (real = int * scale)."""
+    return np.clip(np.rint(np.asarray(x) / scale), -128, 127).astype(np.int64)
+
+
+def cim_matvec(W, x):
+    """W: (p<=N_PART, r<=N_ROWS) INT8, x: (r,) INT8 -> (p,) accumulators.
+
+    Pads to the full 32 x 64 array exactly as the hardware would see it
+    (unused rows/partitions hold zero weights / zero activations).
+    """
+    p, r = W.shape
+    Wp = np.zeros((N_PART, N_ROWS), dtype=np.int64)
+    xp = np.zeros(N_ROWS, dtype=np.int64)
+    Wp[:p, :r] = W
+    xp[:r] = x
+    return core_mac(Wp, xp)[:p]
+
+
+def attention_head_float(X, Wq, Wk, Wv):
+    """Plain float single-head attention: softmax(Q K^T / sqrt(d)) V."""
+    Q, K, V = X @ Wq, X @ Wk, X @ Wv
+    s = Q @ K.T / np.sqrt(Q.shape[1])
+    s -= s.max(axis=1, keepdims=True)
+    p = np.exp(s)
+    p /= p.sum(axis=1, keepdims=True)
+    return p @ V, dict(Q=Q, K=K, V=V, S=s)
+
+
+def attention_head_cim(X, Wq, Wk, Wv, score_scale=None):
+    """The same head, computed with the CIMple datapath (integers only).
+
+    Encoder-only mapping, one 64-row x 32-column tile:
+        X (N x 64), Wq/Wk/Wv (64 x d)   with N <= 32, d <= 32
+      1. weight projection : weights = W^T (d partitions x 64 rows), act = x_i
+      2. QK^T              : weights = K (N partitions x d rows),    act = q_i
+      3. softmax           : split LUT softmax per row
+      4. A'V               : weights = V^T (d partitions x N rows),  act = e_i
+    Every requantisation scale is calibrated from the data (per-tensor).
+    Returns the INT8 output (N x d), its real-valued scale, and every
+    intermediate, so an RTL test can later compare stage by stage.
+    """
+    N, dm = X.shape
+    d = Wq.shape[1]
+    assert N <= N_PART and d <= N_ROWS and dm <= N_ROWS
+
+    sx = np.abs(X).max() / 127
+    sw = [np.abs(W).max() / 127 for W in (Wq, Wk, Wv)]
+    qX = to_int8(X, sx)
+    qW = [to_int8(W, s) for W, s in zip((Wq, Wk, Wv), sw)]
+
+    # 1. projection -------------------------------------------------------
+    proj = []
+    for W, s in zip(qW, sw):
+        acc = np.array([cim_matvec(W.T, qX[i]) for i in range(N)])     # N x d
+        real = acc * sx * s
+        sc = np.abs(real).max() / 127
+        scl, sh = ratio_to_scale_shift(sx * s / sc)
+        q = np.array([[quantise(a, scl, sh) for a in row] for row in acc])
+        proj.append((q, sc))
+    (Qi, sq), (Ki, sk), (Vi, sv) = proj
+
+    # 2. QK^T -------------------------------------------------------------
+    acc_s = np.array([cim_matvec(Ki, Qi[i]) for i in range(N)])         # N x N
+    real_s = acc_s * sq * sk / np.sqrt(d)
+    if score_scale is None:
+        score_scale = np.abs(real_s).max() / 127
+    scl, sh = ratio_to_scale_shift(sq * sk / np.sqrt(d) / score_scale)
+    z = np.array([[quantise(a, scl, sh) for a in row] for row in acc_s])
+
+    # 3 + 4. softmax and A'V ------------------------------------------------
+    exp_lut = build_exp_lut(score_scale)
+    recip_lut = build_recip_lut()
+    out = np.zeros((N, d), dtype=np.int64)
+    e_rows = []
+    for i in range(N):
+        row = None
+        for c in range(d):
+            row = softmax_row(z[i], Vi[:, c], exp_lut, recip_lut)
+            out[i, c] = row["score"]
+        e_rows.append(row["e"])
+    return dict(out=out, out_scale=sv, Q=Qi, K=Ki, V=Vi, z=z,
+                e=np.array(e_rows), score_scale=score_scale)

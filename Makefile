@@ -12,7 +12,7 @@ test: luts
 lint:
 	verilator --lint-only -Wall -Wno-DECLFILENAME -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM \
 	  --top-module cim_core \
-	  $(RTL)/cimple_pkg.sv $(RTL)/cim_macro.sv $(RTL)/cim_partition.sv $(RTL)/cim_core.sv
+	  $(RTL)/cimple_pkg.sv $(RTL)/bitcell.sv $(RTL)/oai221.sv $(RTL)/cim_macro.sv $(RTL)/cim_partition.sv $(RTL)/cim_core.sv
 	verilator --lint-only -Wall -Wno-DECLFILENAME -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM \
 	  --top-module split_softmax \
 	  $(RTL)/cimple_pkg.sv $(RTL)/quant_unit.sv $(RTL)/lut_rom.sv $(RTL)/split_softmax.sv

@@ -48,15 +48,16 @@ module cim_partition
   // Written as a reduction; synthesis infers the balanced tree. Range checks:
   //   MSB tree: 64 * [-8, 7]  -> [-512, 448]  -> 10b signed   ("10b x 32")
   //   LSB tree: 64 * [ 0,15]  -> [   0, 960]  -> 10b unsigned ("10b x 32")
+
   logic signed [TREE_W-1:0] sum_msb;
-  logic        [TREE_W-1:0] sum_lsb;
+  logic [TREE_W-1: 0] sum_lsb;
 
   always_comb begin
     automatic logic signed [TREE_W-1:0] acc_m = '0;
-    automatic logic        [TREE_W-1:0] acc_l = '0;
-    for (int unsigned r = 0; r < N_ROWS; r++) begin
-      acc_m += TREE_W'($signed(p_msb[r]));
-      acc_l += TREE_W'(p_lsb[r]);
+    automatic logic [TREE_W-1:0] acc_l = '0;
+    for (int unsigned i = 0; i < N_ROWS;i++ ) begin
+      acc_m += TREE_W'($signed(p_msb[i]));
+      acc_l += TREE_W'((p_lsb[i]));
     end
     sum_msb = acc_m;
     sum_lsb = acc_l;
@@ -64,21 +65,19 @@ module cim_partition
 
   // --- "<<4" combine -------------------------------------------------------
   //   (sum_msb << 4) + sum_lsb  ->  [-8192, 8128] -> 15b signed ("15b x 32")
-  logic signed [COMB_W-1:0] comb;
-  assign comb = (COMB_W'($signed(sum_msb)) <<< NIB_W) + COMB_W'($signed({1'b0, sum_lsb}));
 
+  logic signed [COMB_W-1: 0] comb_val;
+  assign comb_val = (COMB_W'($signed(sum_msb) <<< NIB_W)) + COMB_W'($signed({1'b0, sum_lsb}));
   // --- "<<1 & ACC" bit-serial shift-accumulator ----------------------------
   logic signed [MAC_W-1:0] acc_q;
-
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @( posedge clk_i or negedge rst_ni ) begin
     if (!rst_ni) begin
       acc_q <= '0;
     end else if (mac_en_i) begin
-      if (mac_first_i) acc_q <= -MAC_W'(comb);              // sign bit
-      else             acc_q <= (acc_q <<< 1) + MAC_W'(comb);
+      if (mac_first_i) acc_q <= -MAC_W'(comb_val);
+      else acc_q <= (acc_q <<< 1) + MAC_W'(comb_val);
     end
   end
 
   assign acc_o = acc_q;
-
 endmodule
