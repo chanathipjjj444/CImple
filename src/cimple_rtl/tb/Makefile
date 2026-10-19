@@ -18,7 +18,8 @@ VERILOG_SOURCES := \
   $(TOPDIR)/rtl/cim_core.sv \
   $(TOPDIR)/rtl/quant_unit.sv \
   $(TOPDIR)/rtl/lut_rom.sv \
-  $(TOPDIR)/rtl/split_softmax.sv
+  $(TOPDIR)/rtl/split_softmax.sv \
+  $(TOPDIR)/rtl/acc_buffer.sv
 
 MODULE   ?= test_cim_partition
 TOPLEVEL ?= cim_partition

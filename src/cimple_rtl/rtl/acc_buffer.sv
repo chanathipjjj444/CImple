@@ -21,6 +21,7 @@
 // CHECK: 23b -> 32b must SIGN-extend. Think about what happens to a negative
 //        partial sum if you zero-extend it.
 // ---------------------------------------------------------------------------
+
 module acc_buffer
   import cimple_pkg::*;
 #(
@@ -39,8 +40,20 @@ module acc_buffer
   output logic signed [ACC_W-1:0]       rd_o [N_LANES]
 );
 
-  // TODO: storage  (DEPTH entries x N_LANES lanes x ACC_W bits)
-  // TODO: write path (the three cases in the header above)
-  // TODO: read path -> rd_o
+  logic [ACC_W-1:0] buff [DEPTH][N_LANES];
+  always_ff @( posedge clk_i ) begin
+    if (acc_en_i) begin
+      for (int l = 0;l < N_LANES ;l++ ) begin
+        if (acc_first_i) buff[addr_i][l] <= ACC_W'(cim_in_i[l]);
+        else buff[addr_i][l] <= buff[addr_i][l] + ACC_W'(cim_in_i[l]);
+      end
+    end
+  end
+
+  
+
+  for (genvar l =0 ;l < N_LANES ;l++ ) begin: g_assign
+    assign rd_o[l] = buff[addr_i][l];
+  end
 
 endmodule

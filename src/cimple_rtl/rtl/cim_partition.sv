@@ -22,7 +22,7 @@ module cim_partition
   input  logic [DATA_W-1:0]       wdata_i,
   // --- compute port --------------------------------------------------------
   input  logic                    bank_sel_i,
-  input  logic [N_ROWS-1:0]       x_bits_i,     // one bit per row, this cycle
+  input  logic [N_ROWS-1:0]       x_bits_i,     // one bit per row(xin), this cycle
   input  logic                    mac_en_i,     // advance the shift-accumulator
   input  logic                    mac_first_i,  // this cycle carries the sign bit
   output logic signed [MAC_W-1:0] acc_o
