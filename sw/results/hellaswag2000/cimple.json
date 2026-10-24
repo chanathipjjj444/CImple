@@ -1,0 +1,46 @@
+{
+  "preset": "cimple",
+  "softmax_config": "SoftmaxConfig(mode='split_lut', score_bits=8, score_scale='dynamic', zmax='const', exp_precision='full', recip='exact', quantize_qkv=True, quantize_out=True)",
+  "score_scale": "dynamic",
+  "calibrate": false,
+  "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "quant": "w8a8",
+  "quantize_lm_head": false,
+  "num_fewshot": 0,
+  "limit": 2000,
+  "batch_size": 8,
+  "threads": 11,
+  "load_s": 9.4,
+  "eval_s": 2845.0,
+  "n_docs": 2000,
+  "docs_per_s": 0.703,
+  "per_task": {
+    "hellaswag": {
+      "docs": 2000,
+      "requests": 8000,
+      "eval_s": 2845.0,
+      "req_per_s": 2.81,
+      "s_per_doc": 1.422
+    }
+  },
+  "results": {
+    "hellaswag": {
+      "name": "hellaswag",
+      "alias": "hellaswag",
+      "sample_len": 2000,
+      "acc,none": 0.449,
+      "acc_stderr,none": 0.011124809242874465,
+      "acc_norm,none": 0.556,
+      "acc_norm_stderr,none": 0.011112774040420183
+    }
+  },
+  "n-samples": {
+    "hellaswag": {
+      "original": 10042,
+      "effective": 2000
+    }
+  },
+  "versions": {
+    "hellaswag": 1.0
+  }
+}

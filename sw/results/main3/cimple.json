@@ -1,0 +1,84 @@
+{
+  "preset": "cimple",
+  "softmax_config": "SoftmaxConfig(mode='split_lut', score_bits=8, score_scale='dynamic', zmax='const', exp_precision='full', recip='exact', quantize_qkv=True, quantize_out=True)",
+  "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "quant": "w8a8",
+  "quantize_lm_head": false,
+  "num_fewshot": 0,
+  "limit": null,
+  "batch_size": 8,
+  "threads": 11,
+  "load_s": 9.6,
+  "eval_s": 4966.1,
+  "n_docs": 2939,
+  "docs_per_s": 0.592,
+  "per_task": {
+    "arc_challenge": {
+      "docs": 1172,
+      "requests": 4687,
+      "eval_s": 3902.6,
+      "req_per_s": 1.2,
+      "s_per_doc": 3.33
+    },
+    "openbookqa": {
+      "docs": 500,
+      "requests": 2000,
+      "eval_s": 374.6,
+      "req_per_s": 5.34,
+      "s_per_doc": 0.749
+    },
+    "winogrande": {
+      "docs": 1267,
+      "requests": 2534,
+      "eval_s": 688.9,
+      "req_per_s": 3.68,
+      "s_per_doc": 0.544
+    }
+  },
+  "results": {
+    "arc_challenge": {
+      "name": "arc_challenge",
+      "alias": "arc_challenge",
+      "sample_len": 1172,
+      "acc,none": 0.30204778156996587,
+      "acc_stderr,none": 0.013417519144716299,
+      "acc_norm,none": 0.33361774744027306,
+      "acc_norm_stderr,none": 0.013778687054176652
+    },
+    "openbookqa": {
+      "name": "openbookqa",
+      "alias": "openbookqa",
+      "sample_len": 500,
+      "acc,none": 0.252,
+      "acc_stderr,none": 0.019435727282249564,
+      "acc_norm,none": 0.366,
+      "acc_norm_stderr,none": 0.021564276850201684
+    },
+    "winogrande": {
+      "name": "winogrande",
+      "alias": "winogrande",
+      "sample_len": 1267,
+      "acc,none": 0.5943172849250198,
+      "acc_stderr,none": 0.013800206336014186
+    }
+  },
+  "n-samples": {
+    "arc_challenge": {
+      "original": 1172,
+      "effective": 1172
+    },
+    "openbookqa": {
+      "original": 500,
+      "effective": 500
+    },
+    "winogrande": {
+      "original": 1267,
+      "effective": 1267
+    }
+  },
+  "versions": {
+    "arc_challenge": 1.0,
+    "openbookqa": 1.0,
+    "winogrande": 1.0
+  }
+}

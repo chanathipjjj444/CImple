@@ -22,8 +22,9 @@ module quant_unit
   localparam int signed  sd127 =  127;
   localparam int signed  sd128 =  128;
 
+  //rnd == round
   logic signed [PROD_W-1:0] prod, rnd, shifted;
-
+  
   assign prod = $signed(acc_i) * $signed({1'b0, scale_i});
 
   // round half away from zero: add +/- 2^(shift-1) before the arithmetic shift

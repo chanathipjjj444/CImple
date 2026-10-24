@@ -1,0 +1,86 @@
+{
+  "preset": "float_int8attn",
+  "softmax_config": "SoftmaxConfig(mode='float', score_bits=8, score_scale='dynamic', zmax='const', exp_precision='full', recip='exact', quantize_qkv=True, quantize_out=True)",
+  "score_scale": "dynamic",
+  "calibrate": false,
+  "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "quant": "w8a8",
+  "quantize_lm_head": false,
+  "num_fewshot": 0,
+  "limit": null,
+  "batch_size": 8,
+  "threads": 8,
+  "load_s": 14.5,
+  "eval_s": 4620.3,
+  "n_docs": 2939,
+  "docs_per_s": 0.636,
+  "per_task": {
+    "arc_challenge": {
+      "docs": 1172,
+      "requests": 4687,
+      "eval_s": 3506.1,
+      "req_per_s": 1.34,
+      "s_per_doc": 2.992
+    },
+    "openbookqa": {
+      "docs": 500,
+      "requests": 2000,
+      "eval_s": 388.2,
+      "req_per_s": 5.15,
+      "s_per_doc": 0.776
+    },
+    "winogrande": {
+      "docs": 1267,
+      "requests": 2534,
+      "eval_s": 726.1,
+      "req_per_s": 3.49,
+      "s_per_doc": 0.573
+    }
+  },
+  "results": {
+    "arc_challenge": {
+      "name": "arc_challenge",
+      "alias": "arc_challenge",
+      "sample_len": 1172,
+      "acc,none": 0.29692832764505117,
+      "acc_stderr,none": 0.013352025976725267,
+      "acc_norm,none": 0.3293515358361775,
+      "acc_norm_stderr,none": 0.013734057652635537
+    },
+    "openbookqa": {
+      "name": "openbookqa",
+      "alias": "openbookqa",
+      "sample_len": 500,
+      "acc,none": 0.252,
+      "acc_stderr,none": 0.019435727282249564,
+      "acc_norm,none": 0.362,
+      "acc_norm_stderr,none": 0.02151366252758236
+    },
+    "winogrande": {
+      "name": "winogrande",
+      "alias": "winogrande",
+      "sample_len": 1267,
+      "acc,none": 0.606156274664562,
+      "acc_stderr,none": 0.013732114472668642
+    }
+  },
+  "n-samples": {
+    "arc_challenge": {
+      "original": 1172,
+      "effective": 1172
+    },
+    "openbookqa": {
+      "original": 500,
+      "effective": 500
+    },
+    "winogrande": {
+      "original": 1267,
+      "effective": 1267
+    }
+  },
+  "versions": {
+    "arc_challenge": 1.0,
+    "openbookqa": 1.0,
+    "winogrande": 1.0
+  }
+}

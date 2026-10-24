@@ -1,0 +1,105 @@
+{
+  "preset": "float",
+  "softmax_config": "SoftmaxConfig(mode='float', score_bits=8, score_scale='dynamic', zmax='const', exp_precision='full', recip='exact', quantize_qkv=False, quantize_out=False)",
+  "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "quant": "w8a8",
+  "quantize_lm_head": false,
+  "num_fewshot": 0,
+  "limit": 250,
+  "batch_size": 8,
+  "threads": 4,
+  "load_s": 11.2,
+  "eval_s": 3133.4,
+  "n_docs": 1000,
+  "docs_per_s": 0.319,
+  "per_task": {
+    "arc_challenge": {
+      "docs": 250,
+      "requests": 999,
+      "eval_s": 868.0,
+      "req_per_s": 1.15,
+      "s_per_doc": 3.472
+    },
+    "hellaswag": {
+      "docs": 250,
+      "requests": 1000,
+      "eval_s": 1305.4,
+      "req_per_s": 0.77,
+      "s_per_doc": 5.222
+    },
+    "openbookqa": {
+      "docs": 250,
+      "requests": 1000,
+      "eval_s": 548.3,
+      "req_per_s": 1.82,
+      "s_per_doc": 2.193
+    },
+    "winogrande": {
+      "docs": 250,
+      "requests": 500,
+      "eval_s": 411.8,
+      "req_per_s": 1.21,
+      "s_per_doc": 1.647
+    }
+  },
+  "results": {
+    "arc_challenge": {
+      "name": "arc_challenge",
+      "alias": "arc_challenge",
+      "sample_len": 250,
+      "acc,none": 0.296,
+      "acc_stderr,none": 0.028928939388379694,
+      "acc_norm,none": 0.344,
+      "acc_norm_stderr,none": 0.03010450339231644
+    },
+    "hellaswag": {
+      "name": "hellaswag",
+      "alias": "hellaswag",
+      "sample_len": 250,
+      "acc,none": 0.468,
+      "acc_stderr,none": 0.03162125257572558,
+      "acc_norm,none": 0.576,
+      "acc_norm_stderr,none": 0.03131803437491622
+    },
+    "openbookqa": {
+      "name": "openbookqa",
+      "alias": "openbookqa",
+      "sample_len": 250,
+      "acc,none": 0.228,
+      "acc_stderr,none": 0.026587432487268498,
+      "acc_norm,none": 0.376,
+      "acc_norm_stderr,none": 0.03069633626739458
+    },
+    "winogrande": {
+      "name": "winogrande",
+      "alias": "winogrande",
+      "sample_len": 250,
+      "acc,none": 0.596,
+      "acc_stderr,none": 0.03109668818482536
+    }
+  },
+  "n-samples": {
+    "arc_challenge": {
+      "original": 1172,
+      "effective": 250
+    },
+    "hellaswag": {
+      "original": 10042,
+      "effective": 250
+    },
+    "openbookqa": {
+      "original": 500,
+      "effective": 250
+    },
+    "winogrande": {
+      "original": 1267,
+      "effective": 250
+    }
+  },
+  "versions": {
+    "arc_challenge": 1.0,
+    "hellaswag": 1.0,
+    "openbookqa": 1.0,
+    "winogrande": 1.0
+  }
+}

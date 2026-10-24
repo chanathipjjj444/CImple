@@ -1,0 +1,37 @@
+[project]
+name = "cimple-sw"
+version = "0.1.0"
+description = "Software side of the CIMple re-implementation: INT8 LUT-based split softmax in PyTorch, TinyLlama + lm-evaluation-harness accuracy study, latency and mapping models"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "torch>=2.5",
+    "transformers>=4.50,<5",
+    "lm-eval>=0.4.8,<0.5",
+    "accelerate>=1.0",
+    "cimple-rtl",
+]
+
+[project.scripts]
+cimple-sw = "cimple_sw.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+cimple-rtl = { path = "..", editable = true }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[build-system]
+requires = ["uv_build>=0.8,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: needs the TinyLlama checkpoint or takes minutes"]

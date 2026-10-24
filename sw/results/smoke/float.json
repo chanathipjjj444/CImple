@@ -1,0 +1,47 @@
+{
+  "preset": "float",
+  "softmax_config": "SoftmaxConfig(mode='float', score_bits=8, score_scale='dynamic', zmax='const', exp_precision='full', recip='exact', quantize_qkv=False, quantize_out=False)",
+  "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "quant": "w8a8",
+  "quantize_lm_head": false,
+  "num_fewshot": 0,
+  "limit": 16,
+  "batch_size": 8,
+  "threads": 16,
+  "load_s": 9.3,
+  "eval_s": 29.8,
+  "n_docs": 32,
+  "docs_per_s": 1.073,
+  "results": {
+    "arc_challenge": {
+      "name": "arc_challenge",
+      "alias": "arc_challenge",
+      "sample_len": 16,
+      "acc,none": 0.125,
+      "acc_stderr,none": 0.08539125638299665,
+      "acc_norm,none": 0.1875,
+      "acc_norm_stderr,none": 0.10077822185373188
+    },
+    "winogrande": {
+      "name": "winogrande",
+      "alias": "winogrande",
+      "sample_len": 16,
+      "acc,none": 0.625,
+      "acc_stderr,none": 0.125
+    }
+  },
+  "n-samples": {
+    "arc_challenge": {
+      "original": 1172,
+      "effective": 16
+    },
+    "winogrande": {
+      "original": 1267,
+      "effective": 16
+    }
+  },
+  "versions": {
+    "arc_challenge": 1.0,
+    "winogrande": 1.0
+  }
+}

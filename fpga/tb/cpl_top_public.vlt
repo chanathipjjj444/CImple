@@ -1,0 +1,3 @@
+`verilator_config
+// cpl_top cocotb build (see Makefile): only the top level is visible to VPI.
+public_flat_rw -module "cpl_top" -var "*"
